@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@theme {
+  --color-accent-glow: #00d2ff;
+  --color-glass-bg: rgba(255, 255, 255, 0.08);
+  --color-glass-border: rgba(255, 255, 255, 0.12);
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --animate-spin-slow: spin 3s linear infinite;
+}
+
+:root {
+  --bg-gradient: radial-gradient(circle at top left, #1a1c2c, #4a1942, #0f0c29);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-gradient);
+  min-height: 100-screen;
+  color: #ffffff;
+}
+
+.glass-card {
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-glass-border);
+}
+
+.avatar-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  background: conic-gradient(from 0deg, #00d2ff, #9d50bb, #00d2ff);
+  position: relative;
+  box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+}
+
+.avatar-circle::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background: #1a1c2c;
+  border-radius: 50%;
+}
+
+/* Scrollbar styling for glass theme */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
