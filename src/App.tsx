@@ -11,6 +11,10 @@ import {
   MessageSquare,
   Sparkles,
   Trophy,
+  Smile,
+  Zap,
+  Coffee,
+  ShieldCheck,
   ChevronRight,
   Mic,
   MicOff,
@@ -89,6 +93,8 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [config, setConfig] = useState<InterviewConfig>({
     jobTitle: "",
+    jobDescription: "",
+    interviewerTone: "Professional",
     languages: DEFAULT_LANGUAGES,
   });
   const [currentLang, setCurrentLang] = useState("English");
@@ -317,18 +323,62 @@ I'll start with a question in **${currentLang}**. Feel free to answer in that la
                 </p>
               </div>
 
-              <div className="glass-card rounded-[32px] p-10 space-y-10">
+              <div className="glass-card rounded-[32px] p-10 space-y-8 overflow-y-auto max-h-[70vh]">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <label className="flex items-center gap-2 text-xs font-black text-white/40 uppercase tracking-[0.2em]">
+                      <Briefcase size={14} />
+                      Target Job Title
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Lead UI Architect..."
+                      className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-glow transition-all"
+                      value={config.jobTitle}
+                      onChange={(e) => setConfig({ ...config, jobTitle: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="flex items-center gap-2 text-xs font-black text-white/40 uppercase tracking-[0.2em]">
+                      <Sparkles size={14} />
+                      Interviewer Persona
+                    </label>
+                    <div className="flex gap-2">
+                       {[
+                         { id: "Professional", icon: <ShieldCheck size={14} /> },
+                         { id: "Conversational", icon: <Coffee size={14} /> },
+                         { id: "Stressful", icon: <Zap size={14} /> },
+                         { id: "Encouraging", icon: <Smile size={14} /> }
+                       ].map(tone => (
+                         <button
+                           key={tone.id}
+                           onClick={() => setConfig({ ...config, interviewerTone: tone.id })}
+                           title={tone.id}
+                           className={`p-3 rounded-xl transition-all border ${
+                             config.interviewerTone === tone.id
+                               ? "bg-accent-glow text-[#1a1c2c] border-accent-glow"
+                               : "bg-white/5 text-white/60 border-white/10 hover:border-white/30"
+                           }`}
+                         >
+                           {tone.icon}
+                         </button>
+                       ))}
+                       <span className="ml-2 flex items-center text-[10px] font-bold text-accent-glow uppercase tracking-wider">{config.interviewerTone}</span>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-4">
                   <label className="flex items-center gap-2 text-xs font-black text-white/40 uppercase tracking-[0.2em]">
-                    <Briefcase size={14} />
-                    Target Job Title
+                    <MessageSquare size={14} />
+                    Job Description / Context (Optional)
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Lead UI Architect, Regional Director..."
-                    className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-glow transition-all"
-                    value={config.jobTitle}
-                    onChange={(e) => setConfig({ ...config, jobTitle: e.target.value })}
+                  <textarea
+                    placeholder="Paste job requirements or project details here for more targeted questions..."
+                    className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-glow transition-all min-h-[100px] resize-none"
+                    value={config.jobDescription}
+                    onChange={(e) => setConfig({ ...config, jobDescription: e.target.value })}
                   />
                 </div>
 
@@ -395,7 +445,7 @@ I'll start with a question in **${currentLang}**. Feel free to answer in that la
                     </div>
                     <div>
                       <div className="font-bold text-sm">Aria</div>
-                      <div className="text-[10px] text-white/50">Senior Specialist</div>
+                      <div className="text-[10px] text-accent-glow font-bold uppercase tracking-tighter">{config.interviewerTone} Persona</div>
                     </div>
                   </div>
                   <button 
