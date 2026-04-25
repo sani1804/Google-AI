@@ -1,5 +1,5 @@
 {
-  "name": "Polyglot Interviewer",
+  "name": "Prep AI",
   "description": "A real-time multilingual interview practice partner. Practice for any job in English, Hindi, Malayalam, German, Spanish, and more. Get feedback on your answers.",
   "requestFramePermissions": [
     "microphone"

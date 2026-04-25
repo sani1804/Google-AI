@@ -1,65 +1,82 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
 @theme {
-  --color-accent-glow: #00d2ff;
-  --color-glass-bg: rgba(255, 255, 255, 0.08);
-  --color-glass-border: rgba(255, 255, 255, 0.12);
+  --color-accent: #cb855a; /* Prepared Terracotta */
+  --color-anthro-bg: #f9f6f1; /* Anthropic Beige */
+  --color-anthro-text: #1d2433; /* Anthropic Charcoal */
+  --color-glass-bg: rgba(255, 255, 255, 0.7);
+  --color-glass-border: rgba(29, 36, 51, 0.1);
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Newsreader', serif;
   --animate-spin-slow: spin 3s linear infinite;
 }
 
 :root {
-  --bg-gradient: radial-gradient(circle at top left, #1a1c2c, #4a1942, #0f0c29);
+  --bg-color: #f9f6f1;
 }
 
 body {
   font-family: var(--font-sans);
-  background: var(--bg-gradient);
-  min-height: 100-screen;
-  color: #ffffff;
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  color: #1d2433;
+}
+
+h1, h2, h3, h4, .font-serif {
+  font-family: var(--font-serif);
 }
 
 .glass-card {
-  background: var(--color-glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--color-glass-border);
+  background: #ffffff;
+  border: 1px solid rgba(29, 36, 51, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 .avatar-circle {
-  width: 120px;
-  height: 120px;
-  border-radius: 60px;
-  background: conic-gradient(from 0deg, #00d2ff, #9d50bb, #00d2ff);
-  position: relative;
-  box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
-}
-
-.avatar-circle::after {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  background: #1a1c2c;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
+  background: var(--color-anthro-bg);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--color-accent);
 }
 
-/* Scrollbar styling for glass theme */
+.avatar-circle-inner {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+}
+
+.bg-conic {
+  background: linear-gradient(135deg, #1d2433 0%, #cb855a 100%);
+}
+
+/* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  background: #888;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #555;
 }
