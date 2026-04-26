@@ -9,12 +9,12 @@ export interface InterviewConfig {
   jobUrl: string;
   interviewerTone: string;
   languages: string[];
-  mode: "simulation" | "feedback";
+  mode: "simulation" | "feedback" | "auto-simulate";
   candidateProfile: string;
 }
 
 export interface ChatMessage {
-  role: "user" | "model";
+  role: "user" | "model" | "assistant_interviewee";
   text: string;
 }
 
@@ -23,6 +23,55 @@ export interface InterviewFeedback {
   improvements: string[];
   languageProficiency: string;
   overallScore: number; // 1-10
+}
+
+export async function generateAutoSimulation(
+  config: InterviewConfig
+) {
+  const result = await ai.models.generateContent({
+    model: "gemini-1.5-flash",
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: `Simulate a full 45-60 minute deep-dive professional job interview transcript between two highly specialized agents.
+
+AGENT PERSONAS:
+1. INTERVIEWER: A seasoned Hiring Manager with a ${config.interviewerTone} disposition. Deeply analytical, looking for specific metrics and cultural alignment. 
+2. CANDIDATE: Fully embodying this profile: ${config.candidateProfile}. High-initiative, providing specific examples of projects, leadership, and technical challenges.
+
+CONTEXT:
+Job Role: ${config.jobTitle}
+Company: ${config.companyName || 'Target Organization'}
+Job Description: ${config.jobDescription}
+Arena & Location: ${config.jobUrl || 'Hybrid/Global'}
+
+INSTRUCTIONS:
+1. Generate a comprehensive transcript that feels like a full-length 60-minute session.
+2. Focus on "arena-specific" challenges (industry-specific nuances).
+3. The interviewer should dig deep into the candidate's tasks and initiatives.
+4. Total 20-25 high-quality exchanges.
+5. Fluently use these languages as configured: ${config.languages.join(", ")}.
+6. Format strictly as JSON:
+{
+  "messages": [
+    { "role": "model", "text": "Detailed question from interviewer..." },
+    { "role": "user", "text": "Detailed expert response from candidate..." }
+  ]
+}` }]
+      }
+    ],
+    config: {
+      responseMimeType: "application/json"
+    }
+  });
+
+  try {
+    const data = JSON.parse(result.text);
+    return data.messages as ChatMessage[];
+  } catch (e) {
+    console.error("Failed to parse auto-simulation", e);
+    return [];
+  }
 }
 
 export async function generateQuestion(
@@ -47,7 +96,7 @@ Candidate Profile/Notes: ${config.candidateProfile || "None provided"}
 `.trim();
 
   const result = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: "gemini-1.5-flash",
     contents: [
       {
         role: "user",
@@ -89,7 +138,7 @@ export async function generateFeedback(
   language: string
 ) {
   const result = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: "gemini-1.5-flash",
     contents: [
       {
         role: "user",
@@ -129,14 +178,18 @@ export interface SummaryReport {
   languageProficiency: string;
   overallScore: number; // 0-100
   scoringReasoning: string;
+  idealAnswers?: { question: string; answer: string }[];
 }
 
 export async function generateSummaryFeedback(
   config: InterviewConfig,
-  history: ChatMessage[]
+  history: ChatMessage[],
+  includeIdealAnswers: boolean = false
 ): Promise<SummaryReport | null> {
+  const forceIdeal = config.mode === 'auto-simulate' || includeIdealAnswers;
+
   const result = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: "gemini-1.5-flash",
     contents: [
       {
         role: "user",
@@ -154,6 +207,8 @@ The evaluation should be strictly based on the provided Job Requirements and the
 Transcript:
 ${history.map(m => `${m.role}: ${m.text}`).join("\n")}
 
+${forceIdeal ? `CRITICAL: Since "includeIdealAnswers" is TRUE, for EACH question asked by the interviewer in the transcript, you MUST provide an "idealAnswer" that represents the best possible response for this specific role and persona.` : ""}
+
 Provide the report in JSON format:
 {
   "strengths": ["string"],
@@ -163,7 +218,10 @@ Provide the report in JSON format:
   "behavioralAssessment": "Analysis of soft skills and communication style vs hirer persona expectations",
   "languageProficiency": "Assessment of multilingual capabilities used",
   "overallScore": number (0-100),
-  "scoringReasoning": "A detailed explanation of why this specific score (out of 100) was awarded, justifying it based on the job requirements and the hirer's expectations."
+  "scoringReasoning": "A detailed explanation of why this specific score (out of 100) was awarded, justifying it based on the job requirements and the hirer's expectations."${forceIdeal ? `,
+  "idealAnswers": [
+    { "question": "Interviewer's question from transcript", "answer": "The ideal/best suited answer for this role" }
+  ]` : ""}
 }` }]
       }
     ],
